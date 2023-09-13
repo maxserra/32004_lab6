@@ -6,20 +6,35 @@ public class TimeManager : MonoBehaviour
 {
 
     private int lastTime = 0;
+    private float timer;
+
+    [SerializeField] private Transform[] transformArray;
+
+    private const float moveWait = 2.0f;
 
     private void Start()
     {
-        Debug.Log(lastTime);
+        // Reset time
+        ResetTime();
+
+        // Change camere perspective
+        Camera.main.orthographic = true;
+        Camera.main.orthographicSize = 2.5f;
     }
 
     private void Update()
     {
-        if ((Time.time - lastTime) >= 1)
+        // Timer things
+        if (Time.timeScale != 0 &
+            ((timer == 0) |
+             (timer - lastTime >= 1)))
         {
-            lastTime = (int)Time.time;
-            Debug.Log(lastTime);
+            Debug.Log((int)timer);
+            lastTime = (int)timer;
         }
+        timer += Time.deltaTime;
 
+        // Spacebar stopper
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("Spacebar pressed");
@@ -28,6 +43,23 @@ public class TimeManager : MonoBehaviour
             else
                 Time.timeScale = 1;
         }
+
+        // Enter resetter
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            ResetTime();
+        }
+    }
+
+    private void MoveObjects()
+    {
+
+    }
+
+    private void ResetTime()
+    {
+        timer = 0;
+        lastTime = 0;
     }
 
 }
