@@ -43,7 +43,8 @@ public class TimeManager : MonoBehaviour
             lastTime = (int)timer;
 
             // Move objects
-            if ((int)timer % moveWait == 0)
+            if ((int)timer != 0 &
+                (int)timer % moveWait == 0)
             {
                 Debug.Log("Moving objects...");
                 MoveObjects();
