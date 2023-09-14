@@ -22,6 +22,10 @@ public class TimeManager : MonoBehaviour
     private Vector3 botLeft;
     private Vector3 topLeft;
 
+    private const float scaleWait = 4.0f;
+
+    private Coroutine rotatorCor = null;
+
     private void Start()
     {
         // Reset time
@@ -68,7 +72,13 @@ public class TimeManager : MonoBehaviour
             ResetTime();
         }
 
-
+        // Escape rotator
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            float delay = Random.Range(0.5f, 1.0f);
+            if (rotatorCor == null)
+                rotatorCor = StartCoroutine("RotateObjects", delay);
+        }
     }
 
     private void MoveObjects()
@@ -103,10 +113,44 @@ public class TimeManager : MonoBehaviour
             objTransform.position = topRight;
     }
 
+    private void ScaleObjects()
+    {
+        ScaleOneObject(transformArray[0]);
+        ScaleOneObject(transformArray[1]);
+    }
+
+    private void ScaleOneObject(Transform objTransform)
+    {
+        if (objTransform.localScale.x > 1.5)
+            objTransform.localScale = new Vector3(objTransform.localScale.x / 1.2f,
+                                                  objTransform.localScale.y / 1.2f,
+                                                  objTransform.localScale.y / 1.2f);
+        else
+            objTransform.localScale = new Vector3(objTransform.localScale.x * 1.2f,
+                                                  objTransform.localScale.y * 1.2f,
+                                                  objTransform.localScale.y * 1.2f);
+    }
+
     private void ResetTime()
     {
         timer = 0;
         lastTime = 0;
+
+        CancelInvoke();
+        InvokeRepeating("ScaleObjects", scaleWait, scaleWait);
     }
 
+    IEnumerator RotateObjects(float randomDelay)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            yield return new WaitForSeconds(randomDelay);
+
+            transformArray[0].Rotate(new Vector3(0, 0, 90), Space.Self);
+            transformArray[1].Rotate(new Vector3(0, 0, 90), Space.Self);
+        }
+
+        rotatorCor = null;
+        yield return null;
+    }
 }
